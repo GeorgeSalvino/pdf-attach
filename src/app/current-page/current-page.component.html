@@ -1,0 +1,8 @@
+<form [formGroup]="fileForm">
+  <input #fileInput formControlName="fileUpload" type="file" (change)="loadFile()">
+</form>
+<button (click)="changePage(false)">Previous</button>
+<button (click)="changePage(true)">Next</button>
+<span #pageCounter>Page {{ currentPageNumber }} / {{ numberOfPages }}</span>
+<iframe [src]="pdf64"></iframe>
+<button (click)="deletePage()">Delete Page</button>
