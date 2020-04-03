@@ -1,16 +1,14 @@
 import { BrowserModule } from '@angular/platform-browser';
 import { NgModule } from '@angular/core';
-import { ReactiveFormsModule } from '@angular/forms';
 
 import { AppComponent } from './app.component';
 import { CurrentPageComponent } from './current-page/current-page.component';
-import { CarouselComponent } from './carousel/carousel.component';
+import { ReactiveFormsModule } from '@angular/forms';
 
 @NgModule({
   declarations: [
     AppComponent,
-    CurrentPageComponent,
-    CarouselComponent
+    CurrentPageComponent
   ],
   imports: [
     BrowserModule,

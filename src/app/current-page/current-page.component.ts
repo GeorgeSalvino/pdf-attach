@@ -6,9 +6,10 @@ import { DomSanitizer } from '@angular/platform-browser';
 @Component({
   selector: 'app-current-page',
   templateUrl: './current-page.component.html',
-  styleUrls: ['./current-page.component.sass']
+  styleUrls: ['./current-page.component.css']
 })
 export class CurrentPageComponent implements OnInit {
+
 
   fileForm = new FormGroup({
     fileUpload: new FormControl(''),
@@ -122,5 +123,6 @@ export class CurrentPageComponent implements OnInit {
     this.currentPageNumber = this.currentIndex + 1;
     this.numberOfPages = this.srcPdf.getPageCount();
   }
+
 
 }
