@@ -96,17 +96,33 @@ export class CurrentPageComponent implements OnInit, AfterViewInit {
   }
 
   async deletePage() {
-    this.srcPdf.removePage(this.currentIndex);
-    let temp = await this.srcPdf.saveAsBase64({dataUri: true});
-    this.srcPdf = await PDFDocument.load(temp);
-    if (this.srcPdf.getPageCount() === this.currentIndex) {
+    if(this.srcPdf.getPageCount() == 1) {
+      let docTemp = await PDFDocument.create();
+      this.srcPdf = await PDFDocument.create();
+      this.currentIndex = 0;
+      this.displayPdfJs(docTemp)
+      this.updatePageCounter()
+    } else {
+      this.srcPdf.removePage(this.currentIndex);
+      let temp = await this.srcPdf.saveAsBase64({dataUri: true});
+      this.srcPdf = await PDFDocument.load(temp);
+      if(this.srcPdf.getPageCount() == 1) {
+      /* let docTemp = await PDFDocument.create(); */
+      this.currentIndex = 0;
+      this.ngOnInit();
+      this.updatePageCounter();
+    }
+    else if (this.srcPdf.getPageCount() === this.currentIndex) {
       this.changePage(null);
       console.log(this.srcPdf.getPageCount())
-    } else{
+    }
+    else{
       console.log(this.srcPdf.getPages().length)
       this.currentIndex++
       this.changePage(undefined, this.currentIndex);
     }
+    }
+
   }
 
   updatePageCounter() {
