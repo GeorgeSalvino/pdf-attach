@@ -2,3 +2,14 @@ iframe{
   width: 50vw;
   height: 90vh;
 }
+#the-canvas {
+  border: 1px solid black;
+  direction: ltr;
+  width: 420px;
+  height:594px;
+}
+
+#left-canvas, #middle-canvas, #right-canvas {
+  border: 1px solid black;
+  direction: ltr;
+}
