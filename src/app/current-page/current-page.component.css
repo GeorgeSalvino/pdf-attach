@@ -60,3 +60,7 @@ iframe{
   top: 645px;
   left:300px
 }
+
+#file-input:hover, #download:hover, #previous:hover, #next:hover, #delete:hover{
+  cursor: pointer
+}
