@@ -1,10 +1,11 @@
 import { Component, OnInit, ViewChild, ElementRef, AfterViewInit, ViewChildren } from '@angular/core';
 import { FormGroup, FormControl } from '@angular/forms';
-import { PDFDocument, PDFEmbeddedPage, PDFPage } from 'pdf-lib';
+import { PDFDocument, PDFEmbeddedPage, PDFPage, PDFImage } from 'pdf-lib';
 import { DomSanitizer } from '@angular/platform-browser';
 import { PreviewComponent } from '../preview/preview.component';
 import * as pdfjsLib from 'pdfjs-dist/build/pdf';
 import { CurrentPageService } from './current-page.service';
+import { faTrash, faChevronRight, faChevronLeft, faDownload } from '@fortawesome/free-solid-svg-icons';
 
 @Component({
   selector: 'app-current-page',
@@ -12,13 +13,6 @@ import { CurrentPageService } from './current-page.service';
   styleUrls: ['./current-page.component.css']
 })
 export class CurrentPageComponent implements OnInit, AfterViewInit {
-
-
-  fileForm = new FormGroup({
-    fileUpload: new FormControl(''),
-  });
-
-  pdf64 = this.sanitizer.bypassSecurityTrustUrl('');
 
   @ViewChild('fileInput') fileInput: ElementRef;
   @ViewChild('theCanvas') canvas: ElementRef;
@@ -35,7 +29,10 @@ export class CurrentPageComponent implements OnInit, AfterViewInit {
   ctx3: CanvasRenderingContext2D ;
   ctx4: CanvasRenderingContext2D ;
 
-
+  faTrash = faTrash;
+  faChevronRight = faChevronRight;
+  faChevronLeft = faChevronLeft;
+  faDownload = faDownload;
 
   currentIndex = 0;
 
@@ -73,28 +70,25 @@ export class CurrentPageComponent implements OnInit, AfterViewInit {
   }
 
   async changePage(isNext: boolean, index?) {
-    if(isNext === null) {
+    let doc;
+    if (isNext === null) {
       this.currentIndex = 0;
-      let doc = await this.copyPage(this.currentIndex);
-
-      this.showCurrentPage(doc);
+      doc = await this.copyPage(this.currentIndex);
 
     }
     else if (this.currentIndex !== 0 && !isNext) {
       this.currentIndex--;
-      let doc = await this.copyPage(this.currentIndex);
+      doc = await this.copyPage(this.currentIndex);
 
-      this.showCurrentPage(doc);
     } else if (!(this.srcPdf.getPageCount() - 1 === this.currentIndex) && isNext) {
       this.currentIndex++;
-      let doc = await this.copyPage(this.currentIndex);
+      doc = await this.copyPage(this.currentIndex);
 
-      this.showCurrentPage(doc);
-    } else if(index) {
-      let doc = await this.copyPage(index);
+    } else if (index) {
+      doc = await this.copyPage(index);
 
-      this.showCurrentPage(doc);
     }
+    this.showCurrentPage(doc);
     this.updatePageCounter();
 
 
@@ -105,7 +99,7 @@ export class CurrentPageComponent implements OnInit, AfterViewInit {
     this.srcPdf.removePage(this.currentIndex);
     let temp = await this.srcPdf.saveAsBase64({dataUri: true});
     this.srcPdf = await PDFDocument.load(temp);
-    if(this.srcPdf.getPageCount() === this.currentIndex) {
+    if (this.srcPdf.getPageCount() === this.currentIndex) {
       this.changePage(null);
       console.log(this.srcPdf.getPageCount())
     } else{
@@ -118,6 +112,7 @@ export class CurrentPageComponent implements OnInit, AfterViewInit {
   updatePageCounter() {
     this.currentPageNumber = this.currentIndex + 1;
     this.numberOfPages = this.srcPdf.getPageCount();
+    console.log(this.currentPageNumber, this.numberOfPages)
   }
 
   async threePagesPreview() {
@@ -126,11 +121,11 @@ export class CurrentPageComponent implements OnInit, AfterViewInit {
 
     let doc = await PDFDocument.create();
 
-    if(isOnfirst) {
+    if (isOnfirst) {
       this.previewPages[0] = this.srcPdf.getPages()[this.currentIndex]
       this.previewPages[1] = this.srcPdf.getPages()[this.currentIndex + 1]
       this.previewPages[2] = this.srcPdf.getPages()[this.currentIndex + 2]
-    } else if(isOnLast) {
+    } else if (isOnLast) {
       this.previewPages[0] = this.srcPdf.getPages()[this.currentIndex - 2]
       this.previewPages[1] = this.srcPdf.getPages()[this.currentIndex - 1]
       this.previewPages[2] = this.srcPdf.getPages()[this.currentIndex]
@@ -162,7 +157,7 @@ export class CurrentPageComponent implements OnInit, AfterViewInit {
     let loadingTask = pdfjsLib.getDocument({data: pdf64});
     loadingTask.promise.then((pdf) => {
 
-      for(let i = 2; i <= 4; i++) {
+      for (let i = 2; i <= 4; i++) {
         console.log('PDF loaded');
 
         let pageNumber = i - 1;
@@ -217,6 +212,7 @@ export class CurrentPageComponent implements OnInit, AfterViewInit {
 
         let renderTask = page.render(renderContext);
         renderTask.promise.then(() => {
+          console.log('rendered')
           this.threePagesPreview();
         });
 
@@ -233,8 +229,10 @@ export class CurrentPageComponent implements OnInit, AfterViewInit {
     await reader.readAsDataURL(this.fileInput.nativeElement.files[0]);
     console.log(reader)
     reader.onload = async () => {
-      if(!reader.result.toString().includes('data:image/jpeg')) {
-        if(this.srcPdf.getPages().length == 0) {
+      let isJpg = reader.result.toString().includes('data:image/jpeg');
+      let isPng = reader.result.toString().includes('data:image/png;');
+      if (!isJpg && !isPng) {
+        if (this.srcPdf.getPages().length == 0) {
           this.srcPdf = await PDFDocument.load(reader.result);
 
           let doc = await this.copyPage(0);
@@ -250,14 +248,88 @@ export class CurrentPageComponent implements OnInit, AfterViewInit {
               const page = this.srcPdf.addPage();
               page.drawPage(element);
             });
+            this.previewDisplay(this.srcPdf);
           }
+      } else {
+        let embeddedImage: PDFImage;
+        let doc = await PDFDocument.create()
+
+
+        if (this.srcPdf.getPages().length == 0) {
+          if (isJpg) {
+              embeddedImage = await doc.embedJpg(reader.result);
+          } else {
+              embeddedImage = await doc.embedPng(reader.result);
+          }
+          let imageDims = embeddedImage.scale(1)
+          let page = doc.addPage()
+          page.drawImage(embeddedImage, {
+            x: page.getWidth() / 2 - imageDims.width / 2,
+            y: page.getHeight() / 2 - imageDims.width / 2,
+            width: imageDims.width,
+            height: imageDims.height,
+          });
+          this.srcPdf = doc;
+          this.showCurrentPage(doc);
+
+        } else {
+          if (isJpg) {
+            embeddedImage = await this.srcPdf.embedJpg(reader.result);
+          } else {
+            embeddedImage = await this.srcPdf.embedPng(reader.result);
+          }
+          let imageDims = embeddedImage.scale(1)
+          let page = this.srcPdf.addPage();
+          page.drawImage(embeddedImage, {
+            x: page.getWidth() / 2 - imageDims.width / 2,
+            y: page.getHeight() / 2 - imageDims.width / 2,
+            width: imageDims.width,
+            height: imageDims.height,
+          });
+
+          let docImg = await this.copyPage(0)
+
+          this.showCurrentPage(docImg);
+        }
       }
-
-
       this.updatePageCounter();
     };
   }
 
+  async copyToClipboard() {
+    let base64 = await this.srcPdf.saveAsBase64();
+    let filename = 'pdf.pdf'
+    let contentType = 'application/pdf'
+    const blobData = this.convertBase64ToBlobData(base64, contentType);
 
+    const blob = new Blob([blobData], { type: contentType });
+    const url = window.URL.createObjectURL(blob);
+      // window.open(url);
+    const link = document.createElement('a');
+    link.href = url;
+    link.download = filename;
+    link.click();
+  }
+
+  convertBase64ToBlobData(base64Data: string, contentType: string='image/png', sliceSize=512) {
+    const byteCharacters = atob(base64Data);
+    const byteArrays = [];
+
+    for (let offset = 0; offset < byteCharacters.length; offset += sliceSize) {
+      const slice = byteCharacters.slice(offset, offset + sliceSize);
+
+      const byteNumbers = new Array(slice.length);
+      for (let i = 0; i < slice.length; i++) {
+        byteNumbers[i] = slice.charCodeAt(i);
+      }
+
+      const byteArray = new Uint8Array(byteNumbers);
+
+      byteArrays.push(byteArray);
+    }
+
+    const blob = new Blob(byteArrays, { type: contentType });
+    return blob;
+  }
 
 }

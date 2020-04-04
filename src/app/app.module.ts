@@ -6,6 +6,7 @@ import { CurrentPageComponent } from './current-page/current-page.component';
 import { ReactiveFormsModule } from '@angular/forms';
 import { PreviewComponent } from './preview/preview.component';
 import { SafePipe } from './safe.pipe';
+import { FontAwesomeModule } from '@fortawesome/angular-fontawesome';
 
 @NgModule({
   declarations: [
@@ -16,7 +17,8 @@ import { SafePipe } from './safe.pipe';
   ],
   imports: [
     BrowserModule,
-    ReactiveFormsModule
+    ReactiveFormsModule,
+    FontAwesomeModule
   ],
   providers: [],
   bootstrap: [AppComponent]

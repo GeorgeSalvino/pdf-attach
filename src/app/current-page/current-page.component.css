@@ -3,13 +3,60 @@ iframe{
   height: 90vh;
 }
 #the-canvas {
-  border: 1px solid black;
+  border: 2px solid #022a5b;
   direction: ltr;
   width: 420px;
   height:594px;
+  position: absolute;
+  left: 300px;
 }
 
 #left-canvas, #middle-canvas, #right-canvas {
-  border: 1px solid black;
+  border: 2px solid #022a5b;
   direction: ltr;
+  margin: 20px;
+  width: 84px;
+  height: 119px;
+}
+
+#previewContainer {
+  position: absolute;
+  left: 320px;
+  top: 670px;
+}
+
+#delete {
+  position: absolute;
+  left: 750px;
+  top: 550px;
+}
+
+#next {
+  position: absolute;
+  left: 730px;
+  top: 710px;
+}
+
+#previous {
+  position: absolute;
+  left: 230px;
+  top: 710px;
+}
+
+#download {
+  position: absolute;
+  left: 220px;
+  top: 550px;
+}
+
+#page-counter {
+  position: absolute;
+  top: 5px;
+  left: 500px;
+}
+
+#file-input {
+  position: absolute;
+  top: 645px;
+  left:300px
 }

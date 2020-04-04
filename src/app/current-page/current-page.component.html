@@ -1,19 +1,22 @@
-<form [formGroup]="fileForm">
-  <input #fileInput formControlName="fileUpload" type="file" (change)="loadFile()">
-</form>
+<input id="file-input" #fileInput type="file" (change)="loadFile()">
+<br>
 
-<button (click)="changePage(false)">Previous</button>
-<button (click)="changePage(true)">Next</button>
+<fa-icon [styles]="{'color': '#022a5b'}" id="previous" [icon]="faChevronLeft" size="6x" (click)="changePage(false)"></fa-icon>
 
-<span #pageCounter>Page {{ currentPageNumber }} / {{ numberOfPages }}</span>
+<fa-icon [styles]="{'color': '#022a5b'}" id="next" [icon]="faChevronRight" size="6x" (click)="changePage(true)"></fa-icon>
+
+<span id="page-counter" #pageCounter>Page {{ currentPageNumber }} / {{ numberOfPages }}</span>
 
 <!-- <iframe [src]="pdf64"></iframe> -->
 
 <canvas #theCanvas id="the-canvas"></canvas>
 
-<button (click)="deletePage()">Delete Page</button>
+<fa-icon [styles]="{'color': '#022a5b'}" id="delete" [icon]="faTrash" size="3x" (click)="deletePage()"></fa-icon>
 
+<div id="previewContainer">
+  <canvas #leftCanvas id="left-canvas"></canvas>
+  <canvas #middleCanvas id="left-canvas"></canvas>
+  <canvas #rightCanvas id="left-canvas"></canvas>
+</div>
 
-<canvas #leftCanvas id="left-canvas"></canvas>
-<canvas #middleCanvas id="left-canvas"></canvas>
-<canvas #rightCanvas id="left-canvas"></canvas>
+<fa-icon [styles]="{'color': '#022a5b'}" id="download" [icon]="faDownload" size="3x" (click)="copyToClipboard()"></fa-icon>
