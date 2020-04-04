@@ -126,8 +126,9 @@ export class CurrentPageComponent implements OnInit, AfterViewInit {
   }
 
   updatePageCounter() {
-    this.currentPageNumber = this.currentIndex + 1;
     this.numberOfPages = this.srcPdf.getPageCount();
+    this.currentPageNumber = this.numberOfPages ? this.currentIndex + 1 : 0;
+
     console.log(this.currentPageNumber, this.numberOfPages)
   }
 
