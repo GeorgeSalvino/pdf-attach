@@ -1,4 +1,4 @@
-<input id="file-input" #fileInput type="file" (change)="loadFile()">
+<input id="file-input" #fileInput type="file" (change)="loadFile()" multiple>
 <br>
 
 <fa-icon [styles]="{'color': '#022a5b'}" id="previous" [icon]="faChevronLeft" size="6x" (click)="changePage(false)"></fa-icon>
